@@ -29,12 +29,23 @@ const updateBook = async function(req,res){
     let bookId = req.params.bookId
     if(!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({status:false, message:"invalid BookId"})
     const data = req.body
-    const myBook = await bookModel.findById(bookId)
-    if(myBook.isDeleted===true)return res.status(404).send({status:false, message:"No such book present"})
-    const updatedBook = await bookModel.findOneAndUpdate(myBook,data,{new:true})
+    const myFilter = {
+        _id : bookId,
+        isDeleted: false
+    }
+    const updatedBook = await bookModel.findOneAndUpdate(myFilter,data,{new:true})
+    if(!updatedBook)res.status(404).send({status:false, message:"No such book present"})
     return res.status(200).send({ status: true, message:"Success",data:updatedBook  })
 } catch (err) { return res.status(500).send(err.message) }}
 
+const deleteBook = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        let book = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { isDeleted: true })
+       if (!book) return res.status(404).send({ status: false, msg: "Book is not present" })
+        return res.status(200).send({message:"The book has been deleted"})
+    } catch (err) { return res.status(500).send({error:err.message}) }
+}
 
 
-module.exports = {createBook,getBooks,updateBook}
+module.exports = {createBook,getBooks,updateBook,deleteBook}
