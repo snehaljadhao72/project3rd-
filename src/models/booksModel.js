@@ -28,6 +28,10 @@ const bookSchema = new mongoose.Schema({
         type: [String],
         required: true
     },
+    releasedAt: {
+        type:Date, 
+        required: true,
+    },
     reviews: {
         type:Number, 
         default: 0
@@ -38,10 +42,6 @@ const bookSchema = new mongoose.Schema({
     isDeleted: {
         type:Boolean,
         default:false
-    },
-    releasedAt: {
-        type:Date, 
-        required: true,
     }
 
 }, { timestamps: true })

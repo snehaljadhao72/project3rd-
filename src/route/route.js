@@ -13,7 +13,7 @@ router.post('/books', bookControllers.createBook)
 
 router.get('/books', bookControllers.getBooks)
 
-router.post('/books', bookControllers.getBooks)
+router.get('/books/:bookId', bookControllers.getBookWithReviews)
 
 router.put('/books/:bookId', bookControllers.updateBook)
 

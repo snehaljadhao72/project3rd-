@@ -134,7 +134,6 @@ Make sure all the book routes are protected.
 ==========================================Authorisation================================================
 Make sure that only the owner of the books is able to create, edit or delete the book.
 In case of unauthorized access return an appropirate error message.
-Testing
 
 
 Response
