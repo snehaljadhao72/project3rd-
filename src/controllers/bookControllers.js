@@ -14,9 +14,10 @@ const isValid = function (value) {
 
 const createBook =  async function(req,res){
     try{
+        const data = req.body
     const {title , excerpt , userId , ISBN, category , subcategory ,releasedAt} = req.body
 //=========================validations==============================================//
-    if(Object.keys(req.body) == 0) return res.status(400).send({status:false , message:"please enter details"})
+    if(Object.keys(req.body).length == 0) return res.status(400).send({status:false , message:"please enter details"})
     if(!isValid(title))return res.status(400).send({status:false , message:"please enter title"})
     const usedTitle = await bookModel.findOne({title:title})
     if(usedTitle) return res.status(400).send({status:false , message:" book is already exist"})
@@ -42,8 +43,8 @@ const createBook =  async function(req,res){
     
 
 //======================================Creating user=========================//
-    let user = await bookModel.create(data)
-    res.status(201).send({status:true, message:"Success", data : user})
+    let book = await bookModel.create(data)
+    res.status(201).send({status:true, message:"Success", data : book})
 }catch(err){
     res.status(500).send({status:false, message: err.message})
 }}
@@ -73,12 +74,13 @@ const getBookWithReviews = async function(req,res){
     try{
     const bookId = req.params.bookId
     if(!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({status:false, message:"invalid BookId"})
-    const existingBook = await bookModel.findById(bookId)
+    const existingBook = await bookModel.findById(bookId).lean()
     if(!existingBook) return res.status(404).send({status:false, message:"No such book present"})
     const reviewsData = await reviewModel.find({bookId:bookId})
-    // existingBook.reviewsData = reviewsData
-    const  myResp = {...existingBook , reviewsData : reviewsData}
-    return res.status(200).send({status:true, Data: myResp})
+    existingBook.reviewsData = reviewsData
+    console.log(existingBook)
+    // const  myResp = {...existingBook , reviewsData : reviewsData}
+    return res.status(200).send({status:true, Data:existingBook })
     }catch (err) { return res.status(500).send({status:false , message:err.message}) }
 }
 

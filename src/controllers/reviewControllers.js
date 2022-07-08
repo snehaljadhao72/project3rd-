@@ -22,9 +22,9 @@ let bookId = req.params.bookId;
     if(!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({status:false, message:"invalid BookId"})
     let requiredBook = await bookModel.findOne({_id: bookId, isDeleted: false})
     if(!requiredBook) return res.status(400).send({status:false, message:"No Such book present"})
-  let data = req.body
-  let bookList = await bookModel.findById({_id:bookId}).select({__v:0})
-  let reviewsData = await reviewModel.create(data)
+  const data = req.body
+  const  bookList = await bookModel.findById({_id:bookId}).select({__v:0})
+  const  reviewsData = await reviewModel.create(data)
   if (reviewsData) bookList.reviews++
   const bookData = {...bookList,reviewsData:reviewsData }
   res.send({status: true, data:bookData})

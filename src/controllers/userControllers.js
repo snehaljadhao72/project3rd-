@@ -27,12 +27,12 @@ const createUser =  async function(req,res){
     if(!isValid(phone))return res.status(400).send({status:false , message:"please enter phone number"})
     if(!mobile1.test(phone)) return res.status(400).send({status:false , message:"please enter valid phone number"})
     const usedNumber = await userModel.findOne({phone:phone})
-    if(usedNumber) return res.status(400).send({status:false , message:" Phone number is already exist"})
+    if(usedNumber) return res.status(409).send({status:false , message:" Phone number is already exist"})
 
     if(!isValid(email))return res.status(400).send({status:false , message:"please enter phone number"})
     if(!email1.test(email)) return res.status(400).send({status:false , message:"please enter valid emailId"})
     const usedEmail = await userModel.findOne({email:email})
-    if(usedEmail) return res.status(400).send({status:false , message:" email is already exist"})
+    if(usedEmail) return res.status(409).send({status:false , message:" email is already exist"})
 
     if(!isValid(password))return res.status(400).send({status:false , message:"please enter password"})
     if(!password1.test(password)) return res.status(400).send({status:false , message:"Please enter strong password of atleast 8 character, It should contain atleast One Capital letter , one lower case letter and special character ,"})
@@ -54,7 +54,7 @@ const userLogin = async function (req, res) {
     if (!user)return res.status(400).send({status: false,msg: "email or the password is not corerct", });
     let token = jwt.sign(
         {userId: user._id.toString(),
-         exp: 60 * 60 ,
+        //  exp: 60 * 600 ,
          iat: (new Date().getTime())
         },"Project3-78");
     res.status(200).setHeader("x-api-key", token);
