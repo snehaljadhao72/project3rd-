@@ -13,17 +13,13 @@ router.post('/books', bookControllers.createBook)
 
 router.get('/books', bookControllers.getBooks)
 
-router.post('/books', bookControllers.getBooks)
+router.get('/books/:bookId', bookControllers.getBookWithReviews)
 
 router.put('/books/:bookId', bookControllers.updateBook)
 
-router.post('/books/:bookId/review', reviewControllers.addReview)
+router.delete('/books/:bookId', bookControllers.deleteBook)
 
-
- 
-
-
-
+router.post('/books/:bookId/review', reviewControllers.addReview )
 
 
 module.exports = router
