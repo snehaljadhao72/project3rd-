@@ -14,10 +14,10 @@ const isValid = function (value) {
 
 const createBook =  async function(req,res){
     try{
-    const {title , excerpt , userId , ISBN, category , subcategory , releasedAt} = req.body
-
-    //=========================validations==============================================//
-    if(Object.keys(req.body) == 0) return res.status(400).send({status:false , message:"please enter details"})
+        const data = req.body
+    const {title , excerpt , userId , ISBN, category , subcategory ,releasedAt} = req.body
+//=========================validations==============================================//
+    if(Object.keys(req.body).length == 0) return res.status(400).send({status:false , message:"please enter details"})
     if(!isValid(title))return res.status(400).send({status:false , message:"please enter title"})
     const usedTitle = await bookModel.findOne({title:title})
     if(usedTitle) return res.status(400).send({status:false , message:" book is already exist"})
@@ -39,8 +39,9 @@ const createBook =  async function(req,res){
     if( releasedAt === null || releasedAt === undefined || releasedAt.trim().length == 0 )return res.status(400).send({status:false , message:"please enter date of release"})
     if(!myDate.test(releasedAt))return res.status(400).send({status:false , message:"please enter date in yyyy-mm-dd format only"})
 
-    let user = await bookModel.create(req.body)
-    res.status(201).send({status:true, message:"Success", data : user})
+//======================================Creating user=========================//
+    let book = await bookModel.create(data)
+    res.status(201).send({status:true, message:"Success", data : book})
 }catch(err){
     res.status(500).send({status:false, message: err.message})
 }}
@@ -73,9 +74,10 @@ const getBookWithReviews = async function(req,res){
     const existingBook = await bookModel.findById(bookId).lean()
     if(!existingBook) return res.status(404).send({status:false, message:"No such book present"})
     const reviewsData = await reviewModel.find({bookId:bookId})
-    existingBook.reviews = reviewsData.length
     existingBook.reviewsData = reviewsData
-    return res.status(200).send({status:true, Data: existingBook})
+    console.log(existingBook)
+    // const  myResp = {...existingBook , reviewsData : reviewsData}
+    return res.status(200).send({status:true, Data:existingBook })
     }catch (err) { return res.status(500).send({status:false , message:err.message}) }
 }
 
