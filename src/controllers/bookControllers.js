@@ -52,8 +52,8 @@ const createBook =  async function(req,res){
     if( releasedAt === null ||releasedAt === undefined||releasedAt.trim().length == 0 )return res.status(400).send({status:false , message:"please enter date of release"})
     if(!myDate.test(releasedAt))return res.status(400).send({status:false , message:"please enter date in yyyy-mm-dd format only"})
     
-
-//======================================Creating user=========================//
+  
+//======================================Creating user==========================//
     let book = await bookModel.create(data)
     res.status(201).send({status:true, message:"Success", data : book})
 }catch(err){
