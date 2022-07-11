@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bookModel = require("../models/booksModel.js");
+const userModel = require("../models/userModel.js");
 
 //================================Authentication=======================================//
 const isTokenValid = function (req, res, next) {
@@ -40,6 +41,27 @@ const isAuthorised = async function (req, res, next) {
     }
 }
 
+const isAuthorised2 = async function (req, res, next) {
+    try{
+    reviewId = req.params.reviewId;
+    let requiredReview = await reviewModel.findById(reviewId)
+    if(!requiredReview){
+        return res.status(404).send("No such review present ")
+    }
+    const user = await userModel.findOne({name:requiredReview.reviewedBy})
+    const  token = req.headers["x-api-key"]
+    const decodedToken = jwt.verify(token, "Project3-78")
+    if (userId == decodedToken.userId) {
+        next()
+    }
+    else {
+        return res.status(403).send("you are not authorized to take this action")
+    }}catch (err) {
+    if(err.message=="invalid token") return res.status(400).send({status:false, msg:"invalid token"})
+    if(err.message=="invalid signiture") return res.status(400).send({status:false, msg:"invalid signiture"})
+        return res.status(500).send(err.message)
+    }
+}
 
 
 
