@@ -1,7 +1,7 @@
 const userModel = require("../models/userModel.js")
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken")
-
+const city1 =/^[a-zA-Z]*$/;
 const mobile1=/^[0-9]{10}$/;
 const email1 = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
 const password1 = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,15}$/;
@@ -15,7 +15,7 @@ const isValid = function (value) {
 const createUser =  async function(req,res){
     try{
     const data = req.body;
-    const {title , name , phone , email , password}= data
+    const {title , name , phone , email , password , address }= data
     if(Object.keys(data) == 0) return res.status(400).send({status:false , message:"please enter details"})
     
     if (!isValid(title)) {
@@ -37,7 +37,19 @@ const createUser =  async function(req,res){
 
     if(!isValid(password))return res.status(400).send({status:false , message:"please enter password"})
     if(!password1.test(password)) return res.status(400).send({status:false , message:"Please enter strong password of atleast 8 character, It should contain atleast One Capital letter , one lower case letter and special character ,"})
+     
 
+    if(address) {
+        if(address.city){
+           if(!city1.test(address.city)) return res.status(400).send({status:false , message:"City name should only contain alphabets"})
+        }
+        if(address.street){
+            if(!(typeof address.street === "string"&& address.street.trim().length != 0))return res.status(400).send({status:false , message:"Please enter valid street name"})
+        }
+        if(address.pincode){
+            if(!/^([1-9]\d{5})$/.test(address.pincode))return res.status(400).send({status:false , message:"Pincode should be of 6 digits only"})
+        }
+    }
     let user = await userModel.create(data)
     res.status(201).send({status:true, message:"Success", data : user})
 }catch(err){
@@ -56,8 +68,10 @@ const userLogin = async function (req, res) {
     
     if (!password)  return res.status(400).send({status:false , message: "Password is required" })
     
+    let user1 = await userModel.findOne({ email: email });
+    if (!user1)return res.status(400).send({status: false, message: "email  is not correct", });
     let user = await userModel.findOne({ email: email, password: password });
-    if (!user)return res.status(400).send({status: false, message: "email or the password is not corerct", });
+    if (!user)return res.status(400).send({status: false, message: "password is not correct", });
     
     
     let token = jwt.sign(
@@ -68,9 +82,9 @@ const userLogin = async function (req, res) {
     
         res.status(200).setHeader("x-api-key", token);
         res.status(200).send({ status: true, message: "login Successful", data:{token: token }})
-        
-    }catch(err){return res.status(500).send({ msg: err.message })}}
+
+    }catch(err){return res.status(500).send({ status:false , message: err.message })}}
 
 
 
-    module.exports = {createUser,userLogin, isValid}
+    module.exports = {createUser,userLogin}

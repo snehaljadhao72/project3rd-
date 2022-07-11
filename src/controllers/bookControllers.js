@@ -1,8 +1,9 @@
 const bookModel = require("../models/booksModel.js")
 const mongoose = require("mongoose");
 const reviewModel = require("../models/reviewModel.js");
+const userModel = require("../models/userModel.js");
+const jwt = require("jsonwebtoken");
 
-const re = /^[a-zA-Z\-]+$/;
 const myISBN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
 const myDate = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
@@ -27,10 +28,19 @@ const createBook =  async function(req,res){
 
     if(!isValid(userId))return res.status(400).send({status:false , message:"please enter userId"})
     if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).send({ status: false, message: "Please Enter Valid userId" })
+    const userIdpresent = await userModel.findById(userId)
+    if(!userIdpresent) return res.status(404).send({status:false , message:"No such user present"})
+
+//======================Authorization==========================//
+    let token = req.headers["x-api-key"]
+    let myToken = jwt.verify(token, "Project3-78")
+     if(myToken.userId != userId){
+       return res.status(403).send({status: false , message : " you are not authorised to take this action"})
+     }
 
     
     if(!isValid(ISBN))return res.status(400).send({status:false , message:"please enter ISBN"})
-    if(myISBN.test(ISBN)) return res.status(400).send({status:false , message:"please enter valid ISBN"})
+    if(!myISBN.test(ISBN)) return res.status(400).send({status:false , message:"please enter valid ISBN"})
     const usedISBN = await bookModel.findOne({ISBN:ISBN})
     if(usedISBN) return res.status(409).send({status:false , message:" ISBN is already exist"})
 
@@ -111,7 +121,6 @@ const updateBook = async function(req,res){
     const releasedAt = data.releasedAt
     if(releasedAt){
     if(!myDate.test(releasedAt)) return res.status(400).send({status:false, message:"release date should be in yyyy-mm-dd format only"})
-
     }
 
     const myFilter = {
