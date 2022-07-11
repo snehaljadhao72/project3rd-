@@ -78,7 +78,7 @@ const userLogin = async function (req, res) {
 
         res.status(200).send({ status: true, message: "login Successful", data: { token: token } })
 
-    } catch (err) { return res.status(500).send({ msg: err.message }) }
+    } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 }
 
 

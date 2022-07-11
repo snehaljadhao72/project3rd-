@@ -8,7 +8,7 @@ const addReview = async function (req, res) {
     const bookId = req.params.bookId;
     if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
     const requiredBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
-    if (!requiredBook) return res.status(400).send({ status: false, message: "No Such book present" })
+    if (!requiredBook) return res.status(404).send({ status: false, message: "No Such book present" })
     const data = req.body
     data.bookId = bookId
     data.reviewedAt = new Date();
@@ -28,11 +28,11 @@ const updateReview = async function (req, res) {
     const bookId = req.params.bookId;
     if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
     const requiredBook = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
-    if (!requiredBook) return res.status(400).send({ status: false, message: "No Such book present" })
+    if (!requiredBook) return res.status(404).send({ status: false, message: "No Such book present" })
     const reviewId = req.params.reviewId;
     if (!mongoose.Types.ObjectId.isValid(reviewId)) return res.status(400).send({ status: false, message: "invalid reviewId" })
     const requiredReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
-    if (!requiredReview) return res.status(400).send({ status: false, message: "No Such review present" });
+    if (!requiredReview) return res.status(404).send({ status: false, message: "No Such review present" });
 
     const data = req.body
     const myFilter = {
@@ -55,7 +55,7 @@ const deleteReview = async function (req, res) {
     const reviewId = req.params.reviewId;
     if (!mongoose.Types.ObjectId.isValid(reviewId)) return res.status(400).send({ status: false, message: "invalid reviewId" })
     const requiredReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
-    if (!requiredReview) return res.status(400).send({ status: false, message: "No Such review present" });
+    if (!requiredReview) return res.status(404).send({ status: false, message: "No Such review present" });
 
     const deletedReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { isDeleted: true, deletedAt: new Date() }, { new: true })
     const totalReview = await reviewModel.find({ bookId: bookId }).count()
