@@ -18,9 +18,10 @@ const createBook =  async function(req,res){
     const {title , excerpt , userId , ISBN, category , subcategory ,releasedAt} = req.body
 //=========================validations==============================================//
     if(Object.keys(req.body).length == 0) return res.status(400).send({status:false , message:"please enter details"})
+    
     if(!isValid(title))return res.status(400).send({status:false , message:"please enter title"})
     const usedTitle = await bookModel.findOne({title:title})
-    if(usedTitle) return res.status(400).send({status:false , message:" book is already exist"})
+    if(usedTitle) return res.status(409).send({status:false , message:" book is already exist"})
 
     if(!isValid(excerpt))return res.status(400).send({status:false , message:"please enter book excerpt"})
 
@@ -31,7 +32,7 @@ const createBook =  async function(req,res){
     if(!isValid(ISBN))return res.status(400).send({status:false , message:"please enter ISBN"})
     if(myISBN.test(ISBN)) return res.status(400).send({status:false , message:"please enter valid ISBN"})
     const usedISBN = await bookModel.findOne({ISBN:ISBN})
-    if(usedISBN) return res.status(400).send({status:false , message:" ISBN is already exist"})
+    if(usedISBN) return res.status(409).send({status:false , message:" ISBN is already exist"})
 
     if(!isValid(category))return res.status(400).send({status:false , message:"please enter category"})
 

@@ -10,9 +10,9 @@ router.post('/register', userControllers.createUser)
 
 router.post('/login', userControllers.userLogin)
 
-router.post('/books', bookControllers.createBook)
+router.post('/books', MW.isTokenValid, bookControllers.createBook)
 
-router.get('/books', bookControllers.getBooks)
+router.get('/books', MW.isTokenValid, bookControllers.getBooks)
 
 router.get('/books/:bookId', bookControllers.getBookWithReviews)
 
@@ -21,6 +21,10 @@ router.put('/books/:bookId', MW.isTokenValid, MW.isAuthorised, bookControllers.u
 router.delete('/books/:bookId', MW.isTokenValid, MW.isAuthorised,bookControllers.deleteBook)
 
 router.post('/books/:bookId/review', MW.isTokenValid , MW.isAuthorised , reviewControllers.addReview )
+
+router.put('/books/:bookId/review/:reviewId', MW.isTokenValid , MW.isAuthorised , reviewControllers.updateReview )
+
+router.delete('/books/:bookId/review/:reviewId', MW.isTokenValid , MW.isAuthorised , reviewControllers.deleteReview )
 
 
 
