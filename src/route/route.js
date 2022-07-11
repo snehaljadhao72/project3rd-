@@ -14,17 +14,17 @@ router.post('/books', MW.isTokenValid, bookControllers.createBook)
 
 router.get('/books', MW.isTokenValid, bookControllers.getBooks)
 
-router.get('/books/:bookId', bookControllers.getBookWithReviews)
+router.get('/books/:bookId',MW.isTokenValid, bookControllers.getBookWithReviews)
 
 router.put('/books/:bookId', MW.isTokenValid, MW.isAuthorised, bookControllers.updateBook)
 
 router.delete('/books/:bookId', MW.isTokenValid, MW.isAuthorised,bookControllers.deleteBook)
 
-router.post('/books/:bookId/review', MW.isTokenValid , MW.isAuthorised , reviewControllers.addReview )
+router.post('/books/:bookId/review', MW.isTokenValid ,reviewControllers.addReview )
 
-router.put('/books/:bookId/review/:reviewId', MW.isTokenValid , MW.isAuthorised , reviewControllers.updateReview )
+router.put('/books/:bookId/review/:reviewId', MW.isTokenValid , reviewControllers.updateReview )
 
-router.delete('/books/:bookId/review/:reviewId', MW.isTokenValid , MW.isAuthorised , reviewControllers.deleteReview )
+router.delete('/books/:bookId/review/:reviewId', MW.isTokenValid , reviewControllers.deleteReview )
 
 
 module.exports = router
