@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 
 const mobile1=/^[0-9]{10}$/;
 const email1 = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
-const password1 = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,16}$/;
+const password1 = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,15}$/;
 
 const isValid = function (value) {
     if (typeof value === "undefined" || value === null ) return false;
@@ -18,9 +18,11 @@ const createUser =  async function(req,res){
     const data = req.body;
     const {title , name , phone , email , password}= data
     if(Object.keys(data) == 0) return res.status(400).send({status:false , message:"please enter details"})
-
-    if(!isValid(title))return res.status(400).send({status:false , message:"please enter title"})
-    if(!title.includes("Mr","Miss", "Mr")) return res.status(400).send({status:false , message:"please enter valid title , It should be either of three(Mrs,Miss,Mr)"})
+    
+    if (!isValid(title)) {
+        return res.status(400).send({status:false, message: "title is required" })
+     }else if (title != 'Mr' && title != 'Mrs' && title != 'Miss') {
+        return res.status(400).send({status:false ,  message: "Invalid Title : Valid titles : Mr,Miss,Mrs" })}
 
     if(!isValid(name))return res.status(400).send({status:false , message:"please enter name"})
 
@@ -48,18 +50,27 @@ const userLogin = async function (req, res) {
     try{
     const email = req.body.email;
     const password = req.body.password;
-    if(!email)return res.status(400).send({ msg: "please enter email id" })
-    if (!email1.test(email))  return res.status(400).send({ msg: "please enter valid email id" })
-    if (!password)  return res.status(400).send({ msg: "Password is required" })
+
+    if(Object.keys(req.body) == 0) return res.status(400).send({status:false , message:"please enter details"})
+
+    if(!email)return res.status(400).send({ status:false , message: "please enter email id" })
+    if (!email1.test(email))  return res.status(400).send({ status:false ,message: "please enter valid email id" })
+    
+    if (!password)  return res.status(400).send({status:false , message: "Password is required" })
+    
     let user = await userModel.findOne({ email: email, password: password });
-    if (!user)return res.status(400).send({status: false,msg: "email or the password is not corerct", });
+    if (!user)return res.status(400).send({status: false, message: "email or the password is not corerct", });
+    
+    
     let token = jwt.sign(
         {userId: user._id.toString(),
-        //  exp: 60 * 600 ,
+         exp: (new Date().getTime() + 60 * 60 * 1000)/1000,
          iat: (new Date().getTime())
         },"Project3-78");
-    res.status(200).setHeader("x-api-key", token);
-    res.status(200).send({ status: true, message: "login Successful", data:{token: token }})
+    
+        res.status(200).setHeader("x-api-key", token);
+        res.status(200).send({ status: true, message: "login Successful", data:{token: token }})
+        
     }catch(err){return res.status(500).send({ msg: err.message })}}
 
 
