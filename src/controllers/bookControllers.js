@@ -65,15 +65,15 @@ const getBooks = async function (req, res) {
 
         if (data.userId) {
         if (!mongoose.Types.ObjectId.isValid(data.userId)) return res.status(400).send({ status: false, message: "invalid UserId" })
-        const userIdpresent = await userModel.findById(userId)
+        const userIdpresent = await userModel.findOne({_id:data.userId,isDeleted:false})
         if (!userIdpresent) return res.status(404).send({ status: false, message: "No such userId" })
         }
 
-        if (data.category) {
-            if (!data.category.trim()) return res.status(400).send({ status: false, message: "invalid category" })
+        if (data.category != null) {
+            if (!isValid(data.category)) return res.status(400).send({ status: false, message: "invalid category" })
         }
-        if (data.subcategory) {
-            if (!data.subcategory.trim()) return res.status(400).send({ status: false, message: "invalid subcategory" })
+        if (data.subcategory != null) {
+            if (!isValid(data.subcategory)) return res.status(400).send({ status: false, message: "invalid subcategory" })
         }
         let allBooks = await bookModel.find({ $and: [data, { isDeleted: false }] }).select({
             title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1
@@ -103,13 +103,13 @@ const updateBook = async function (req, res) {
         const bookId = req.params.bookId
 
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
-        const existingBook = await bookModel.findById(bookId)
+        const existingBook = await bookModel.findOne({_id:bookId, isDeleted:false})
         if (!existingBook) return res.status(404).send({ status: false, message: "No such book present" })
 
         const data = req.body
 
         const title = data.title;
-        
+
         if (title != null) {
             if (!isValid(title)) return res.status(400).send({ status: false, message: "please enter title" })
             const existingTitle = await bookModel.findOne({ title: title })
@@ -130,7 +130,7 @@ const updateBook = async function (req, res) {
         }
 
         const releasedAt = data.releasedAt
-        if (releasedAt) {
+        if (releasedAt != null) {
             if (releasedAt === null || releasedAt === undefined || releasedAt.trim().length === 0) return res.status(400).send({ status: false, message: "please enter date of release" })
             if (!myDate.test(releasedAt)) return res.status(400).send({ status: false, message: "release date should be in yyyy-mm-dd format only" })
         }
