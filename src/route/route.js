@@ -16,7 +16,7 @@ router.get('/books', MW.isTokenValid, bookControllers.getBooks)
 
 router.get('/books/:bookId',MW.isTokenValid, bookControllers.getBookWithReviews)
 
-router.put('/books/:bookId', MW.isTokenValid, MW.isAuthorised, bookControllers.updateBook)
+router.put('/books/:bookId',bookControllers.updateBook)
 
 router.delete('/books/:bookId', MW.isTokenValid, MW.isAuthorised,bookControllers.deleteBook)
 

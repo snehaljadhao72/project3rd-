@@ -62,9 +62,6 @@ const createBook = async function (req, res) {
 const getBooks = async function (req, res) {
     try {
         const data = req.query
-        const bookId = req.params.bookId
-
-        if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
 
         if (data.userId) {
         if (!mongoose.Types.ObjectId.isValid(data.userId)) return res.status(400).send({ status: false, message: "invalid UserId" })
@@ -92,7 +89,7 @@ const getBookWithReviews = async function (req, res) {
     try {
         const bookId = req.params.bookId
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
-        const existingBook = await bookModel.findById(bookId).lean()
+        const existingBook = await bookModel.findOne({_id:bookId , isDeleted: false}).lean()
         if (!existingBook) return res.status(404).send({ status: false, message: "No such book present" })
         const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false })
         existingBook.reviewsData = reviewsData
@@ -112,18 +109,19 @@ const updateBook = async function (req, res) {
         const data = req.body
 
         const title = data.title;
-        if (title) {
+        
+        if (title != null) {
             if (!isValid(title)) return res.status(400).send({ status: false, message: "please enter title" })
             const existingTitle = await bookModel.findOne({ title: title })
             if (existingTitle) return res.status(409).send({ status: false, message: "This title is already exist" })
         }
 
-        if (data.excerpt) {
+        if (data.excerpt != null) {
             if (!isValid(data.excerpt)) return res.status(400).send({ status: false, message: "please enter book excerpt" })
         }
 
         const ISBN = data.ISBN;
-        if (ISBN) {
+        if (ISBN != null) {
             if (!isValid(ISBN)) return res.status(400).send({ status: false, message: "please enter ISBN" })
             if (!myISBN.test(ISBN)) return res.status(400).send({ status: false, message: "please enter valid ISBN" })
             const usedISBN = await bookModel.findOne({ ISBN: ISBN })
