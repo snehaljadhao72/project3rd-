@@ -42,7 +42,7 @@ const createUser = async function (req, res) {
    
         if(address) {
             if(address.city){
-               if(!city1.test(address.city)) return res.status(400).send({status:false , message:"City name should only contain alphabets"})
+               if(!(/^[A-Za-z]+$/.test(address.city))) return res.status(400).send({status:false , message:"City name should only contain alphabets"})
             }
             if(address.street){
                 if(!(typeof address.street === "string"&& address.street.trim().length != 0))return res.status(400).send({status:false , message:"Please enter valid street name"})
@@ -66,7 +66,7 @@ const userLogin = async function (req, res) {
         const password = req.body.password;
 
         if (Object.keys(req.body) == 0) return res.status(400).send({ status: false, message: "please enter details" })
-        
+
         if(!email)return res.status(400).send({ status:false , message: "please enter email id" })
         if (!email1.test(email))  return res.status(400).send({ status:false ,message: "please enter valid email id" })
         

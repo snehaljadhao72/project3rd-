@@ -17,8 +17,10 @@ const addReview = async function (req, res) {
     const data = req.body
     const { reviewedBy, rating, review } = data
 
+    console.log(typeof(reviewedBy))
+    if (reviewedBy) {
     if (!isValid(reviewedBy)) return res.status(400).send({ status: false, message: "Please Enter Reviewr's name" })
-
+    }
     if (!isValid(review)) return res.status(400).send({ status: false, message: "Please Enter Review" })
 
     if (!(/^[1-5]$/).test(rating)) return res.status(400).send({ status: false, message: "Enter Rating Between 1 to 5" })
@@ -35,7 +37,7 @@ const addReview = async function (req, res) {
   }
 }
 
-
+  
 const updateReview = async function (req, res) {
   try {
     const bookId = req.params.bookId;

@@ -20,11 +20,11 @@ router.put('/books/:bookId', MW.isTokenValid, MW.isAuthorised, bookControllers.u
 
 router.delete('/books/:bookId', MW.isTokenValid, MW.isAuthorised,bookControllers.deleteBook)
 
-router.post('/books/:bookId/review', MW.isTokenValid ,reviewControllers.addReview )
+router.post('/books/:bookId/review' ,reviewControllers.addReview )
 
-router.put('/books/:bookId/review/:reviewId', MW.isTokenValid , reviewControllers.updateReview )
+router.put('/books/:bookId/review/:reviewId' , reviewControllers.updateReview )
 
-router.delete('/books/:bookId/review/:reviewId', MW.isTokenValid , reviewControllers.deleteReview )
+router.delete('/books/:bookId/review/:reviewId' , reviewControllers.deleteReview )
 
 
 module.exports = router

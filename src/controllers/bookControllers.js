@@ -123,9 +123,6 @@ const updateBook = async function (req, res) {
         }
 
         const ISBN = data.ISBN;
-        console.log(typeof (ISBN))
-        // console.log(ISBN.length)
-
         if (ISBN) {
             if (!isValid(ISBN)) return res.status(400).send({ status: false, message: "please enter ISBN" })
             if (!myISBN.test(ISBN)) return res.status(400).send({ status: false, message: "please enter valid ISBN" })
